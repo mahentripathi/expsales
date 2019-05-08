@@ -1049,20 +1049,33 @@ def predmonth_expdonut():
             profit_npar = sales_npar - expenses_npar
             profit = profit_npar.tolist()
             
-            list_output = [['Expenses', expenses[0]],['Saving', profit[0]]]
+            list_of_dicts = []
+            D = {}
+            D['x']="Saving"
+            D['value']=profit[0]
+            list_of_dicts.append(D)
+            
+            E = {}
+            E['x']="Expenses"
+            E['value']=expenses[0]
+            list_of_dicts.append(E)
+            
+            #list_of_dicts.append(D[i])
+            
+            #list_output = [['Expenses', expenses[0]],['Saving', profit[0]]]
             #profit = sales - expenses
             print("NNNNNNNNNNNNN")
             #print(sales[0])
             print(expenses[0])
             print(profit[0])
-            print(list_output)
+            print(list_of_dicts)
             print("KKKKKKKKKKKKK")
             
             
             ################################################################
             
-            out_json_string = json.dumps(list_output,ensure_ascii=False)
-            
+            #out_json_string = json.dumps(list_output,ensure_ascii=False)
+            out_json_string = json.dumps(list_of_dicts,ensure_ascii=False)
             
             
             #t = "cheese"
