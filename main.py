@@ -1090,6 +1090,158 @@ def predmonth_expdonut():
         print ('Train the model first')
         return ('No model here to use')
 
+#monthwise column
+@app.route('/monthexpcolumn', methods=['POST'])
+@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
+
+def predmonth_expcolumn():
+    #print(request)
+    if regressor_exp:
+        try:
+            print("HELLLO")
+            json1= request.json
+            length = len(json1)
+            
+            query1 = pd.get_dummies(pd.DataFrame(json1))
+            query1 = query1.reindex(columns=model_colexp, fill_value=0)
+            #print(query1)
+            copy_query1 = query1.copy(deep=True)
+            copy_query1['month'] = copy_query1['month'].astype(str) + '月'
+            
+            
+            print("JJJJJJJJJJJJJJJJJJ")
+            print(query1)
+            print("SSSSSSSSSSSSSSSSSS")
+            
+            
+            #mname = query1['m'].apply(lambda x: calendar.month_abbr[x])
+            mname = copy_query1['month']
+            #print(mname)
+            
+            
+            mname=pd.DataFrame(mname)
+            print(mname)
+            
+            prediction1 = (regressor_exp.predict(query1).astype('int64'))
+            
+            print("JJJJJJJJJJ")
+            print(prediction1)
+            print("KkKKKKKK")
+            #print(prediction)
+            prediction1=pd.DataFrame(prediction1, columns=["expenses"])
+            
+            #prediction1['expenses'] = prediction1['expenses'].apply(lambda x: x/1000)
+            
+            con=pd.concat([mname,prediction1], axis=1)
+            print("IIIIIIIIIII")
+            print(con)
+            print("NNNNNNNNNN")
+            df=pd.DataFrame(con)
+            #df.set_index('m')['0'].to_dict()
+            df.set_index('month')['expenses'].to_dict()
+            
+            count = df.shape[0]
+            #print(count)
+            
+            #print("LLLLLLLLLLOOO")
+            #print(df)
+            #print("KKKKKKKKKKKKK")
+            
+            
+            #months = df['month'].tolist()
+            expenses = df['expenses'].tolist()
+            
+            
+            ###################################################################
+            
+            
+            
+            query2 = pd.get_dummies(pd.DataFrame(json1))
+            query2 = query2.reindex(columns=model_colm, fill_value=0)
+            
+            #print("JJJJJJJJJJJJJJJJJJ")
+            #print(query2)
+            #print("SSSSSSSSSSSSSSSSSS")
+            
+            
+            copy_query2 = query2.copy(deep=True)
+            copy_query2['month'] = copy_query2['month'].astype(str) + '月'
+            
+            
+            #print("JJJJJJJJJJJJJJJJJJ")
+            #print(query2)
+            #print("SSSSSSSSSSSSSSSSSS")
+            
+            
+            #mname = query1['m'].apply(lambda x: calendar.month_abbr[x])
+            mname = copy_query2['month']
+            mname=pd.DataFrame(mname)
+            
+            
+            prediction2 = (regressor.predict(query2).astype('int64'))
+            prediction2=pd.DataFrame(prediction2, columns=["sales"])
+            
+            #prediction2['sales'] = prediction2['sales'].apply(lambda x: x/1000)
+            
+            con=pd.concat([mname,prediction2], axis=1)
+            print("IIIIIIIIIII")
+            print(con)
+            print("NNNNNNNNNN")
+            df=pd.DataFrame(con)
+            #df.set_index('m')['0'].to_dict()
+            df.set_index('month')['sales'].to_dict()
+            
+            count = df.shape[0]
+            #print(count)
+            months = df['month'].tolist() ########################
+            sales = df['sales'].tolist() ##########################
+            
+            sales_npar = np.asarray(sales)
+            expenses_npar = np.asarray(expenses)
+            profit_npar = sales_npar - expenses_npar
+            profit = profit_npar.tolist()
+            
+            #list_of_dicts = []
+            #D = {}
+            #D['x']="Saving"
+            #D['value']=profit[0]
+            #list_of_dicts.append(D)
+            
+            #E = {}
+            #E['x']="Expenses"
+            #E['value']=expenses[0]
+            #list_of_dicts.append(E)
+            
+            list_output = [['Sales', sales[0]],['Expenses', expenses[0]]]
+
+            print("NNNNNNNNNNNNN")
+            #print(sales[0])
+            print(expenses[0])
+            print(profit[0])
+            print("KKKKKKKKKKKKK")
+            
+            
+            ################################################################
+            
+            out_json_string = json.dumps(list_output,ensure_ascii=False)
+            #out_json_string = json.dumps(list_of_dicts,ensure_ascii=Fa1lse)
+            
+            
+            #t = "cheese"
+            #return(t)
+            #return(json_dict)
+            return(out_json_string)
+        
+        except:
+            
+            return jsonify({'trace': traceback.format_exc()})
+    else:
+        print ('Train the model first')
+        return ('No model here to use')
+
+
+
+
 #monthwise
 @app.route('/monthv', methods=['POST'])
 @cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
@@ -1247,6 +1399,7 @@ def predmonv():
     else:
         print ('Train the model first')
         return ('No model here to use')
+
 
 if __name__ == '__main__':
     app.run()     
